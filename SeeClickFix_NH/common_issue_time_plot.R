@@ -11,17 +11,21 @@ issue_frame <- data.frame(issue=levels(cats), instances = complaints)
 issue_frame <- issue_frame[order(-issue_frame$instances),]
 top_three_issues <- as.character(issue_frame[1:3,1])
 
+#extract the month each issue was reported
 create_mon <- strptime(input_table$Created.At.Local, "%m/%d/%Y - %I:%M%p")$mon
 
+#separate data by issue category
 all_events <- data.frame(cats, create_mon)
 problem_1 <- subset(all_events, cats == top_three_issues[1])
 problem_2 <- subset(all_events, cats == top_three_issues[2])
 problem_3 <- subset(all_events, cats == top_three_issues[3])
 
+#determine the number of each issue type by month
 problem_1_vs_time <- unlist(lapply(0:11, function(num_mon) nrow(subset(problem_1, create_mon == num_mon))))
 problem_2_vs_time <- unlist(lapply(0:11, function(num_mon) nrow(subset(problem_2, create_mon == num_mon))))
 problem_3_vs_time <- unlist(lapply(0:11, function(num_mon) nrow(subset(problem_3, create_mon == num_mon))))
 
+#make the plot
 pdf(file="common_issues_vs_time.pdf", height=5, width=8)
 plot(problem_1_vs_time, type="o", col="red", axes=FALSE, ann=FALSE, ylim=c(0,500))
 lines(problem_2_vs_time, type="o", col="blue", pch=22)
